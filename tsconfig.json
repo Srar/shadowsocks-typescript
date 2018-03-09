@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./src/",
+        "target": "es6",
+        "module": "commonjs",
+        "allowUnreachableCode": true,
+        "experimentalDecorators": true
+    }
+}

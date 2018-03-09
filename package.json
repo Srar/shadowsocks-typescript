@@ -1,0 +1,28 @@
+{
+  "name": "shadowsocks-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Srar/shadowsocks-typescript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Srar/shadowsocks-typescript/issues"
+  },
+  "homepage": "https://github.com/Srar/shadowsocks-typescript#readme",
+  "dependencies": {
+    "@types/node": "^9.4.7",
+    "@types/optimist": "0.0.29",
+    "optimist": "^0.6.1",
+    "tracer": "^0.8.12",
+    "ts-node": "^5.0.1",
+    "typescript": "^2.7.2"
+  }
+}
