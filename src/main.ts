@@ -23,9 +23,8 @@ const config: IConfig = JSON.parse(fs.readFileSync(argv.config).toString());
 
 /* TCP Process Start */
 const shadowsocksTcpServer: net.Server = net.createServer(function (connection) {
-    var address = connection.address();
-    var clientIp: string = address.address;
-    var clientPort: number = address.port;
+    var clientIp: string = connection.remoteAddress;
+    var clientPort: number = connection.remotePort;
 
     var encryptMethod: ISSCryptoMethod = null;
     try {
