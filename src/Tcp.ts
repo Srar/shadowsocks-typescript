@@ -5,6 +5,8 @@ import * as events from "events"
 import SSCrypto from "./Crypto/SSCrypto"
 import { ISSCryptoMethod } from "./Crypto/ISSCryptoMethod"
 
+import Utils, { IShadowsocksHeader, IShadowsocksHeaderAddressType } from "./Utils"
+
 export default class ShadowsocksTcpProcess extends events.EventEmitter {
 
     private readonly initTime: number = new Date().getTime();
@@ -18,10 +20,7 @@ export default class ShadowsocksTcpProcess extends events.EventEmitter {
     private isClear: boolean = false;
     private isFirstTraffic: boolean = true;
 
-    private remoteAddress: string = "";
-    private remotePort: number = 0;
-    private remoteAddressLength: number = 0;
-    private remoteAddressType: "Unknow" | "IPv4" | "IPv6" | "Domain" = "Unknow";
+    private remoteInfo: IShadowsocksHeader;
 
     private socks5HandSetup: number = 0;
 
@@ -43,7 +42,7 @@ export default class ShadowsocksTcpProcess extends events.EventEmitter {
 
     private onTargetSocketConnect() {
         this.isConnectTarget = true;
-        this.targetSocket.write(this.dataBuffer.slice(3 + this.remoteAddressLength));
+        this.targetSocket.write(this.dataBuffer);
         this.clientSocket.resume();
         this.dataBuffer = null;
         this.emit("targetConnected");
@@ -78,50 +77,13 @@ export default class ShadowsocksTcpProcess extends events.EventEmitter {
         try {
             data = this.processConfig.encryptMethod.decryptData(data);
             if (this.isClientFirstPackage) {
-                if (data[0] == 0x03) {
-                    this.remoteAddressType = "Domain";
-                    this.remoteAddressLength = data[1] + 1;
-                    this.remoteAddress = data.slice(2, this.remoteAddressLength + 1).toString();
-                } else if (data[0] == 0x01) {
-                    this.remoteAddressType = "IPv4";
-                    this.remoteAddressLength = 4;
-                    this.remoteAddress += data[1].toString() + ".";
-                    this.remoteAddress += data[2].toString() + ".";
-                    this.remoteAddress += data[3].toString() + ".";
-                    this.remoteAddress += data[4].toString();
-                } else if (data[0] == 0x04) {
-                    this.remoteAddressType = "IPv6";
-                    this.remoteAddressLength = 16
-                    this.remoteAddress += data[1].toString() + ":";
-                    this.remoteAddress += data[2].toString() + ":";
-                    this.remoteAddress += data[3].toString() + ":";
-                    this.remoteAddress += data[4].toString() + ":";
-                    this.remoteAddress += data[5].toString() + ":";
-                    this.remoteAddress += data[6].toString() + ":";
-                    this.remoteAddress += data[7].toString() + ":";
-                    this.remoteAddress += data[8].toString() + ":";
-                    this.remoteAddress += data[9].toString() + ":";
-                    this.remoteAddress += data[10].toString() + ":";
-                    this.remoteAddress += data[11].toString() + ":";
-                    this.remoteAddress += data[12].toString() + ":";
-                    this.remoteAddress += data[13].toString() + ":";
-                    this.remoteAddress += data[14].toString() + ":";
-                    this.remoteAddress += data[15].toString() + ":";
-                    this.remoteAddress += data[16].toString();
-                } else {
-                    this.onClientSocketError(new Error(`发送了未知地址类型数据包.`));
-                    return;
-                }
-                this.clientSocket.pause();
-                this.remoteAddress = this.remoteAddress.trim();
-                this.remotePort = ((data[this.remoteAddressLength + 1] << 8) + data[this.remoteAddressLength + 2]);
-                if (isNaN(this.remotePort)) {
-                    return this.onClientSocketError(new Error(`发送了未知端口数据包.`));
-                }
-                this.emit("clientHanded", this.remoteAddress, this.remotePort);
+                this.remoteInfo = Utils.parseShadowsocksHeader(data);
+                this.emit("clientHanded", this.remoteInfo.address, this.remoteInfo.port);
                 if (this.isClear) return;
+                this.dataBuffer = this.remoteInfo.payloay;
                 this.isClientFirstPackage = false;
-                this.targetSocket.connect(this.remotePort, this.remoteAddress, this.onTargetSocketConnect.bind(this));
+                this.targetSocket.connect(this.remoteInfo.port, this.remoteInfo.address, this.onTargetSocketConnect.bind(this));
+                return;
             }
         } catch (error) {
             this.onClientSocketError(error);
@@ -166,15 +128,15 @@ export default class ShadowsocksTcpProcess extends events.EventEmitter {
     }
 
     public getRemoteAddress(): string {
-        return this.remoteAddress;
+        return this.remoteInfo.address;
     }
 
-    public getRemoteAddressType(): "Unknow" | "IPv4" | "IPv6" | "Domain" {
-        return this.remoteAddressType;
+    public getRemoteAddressType(): IShadowsocksHeaderAddressType {
+        return this.remoteInfo.addressType;
     }
 
     public getRemotePort(): number {
-        return this.remotePort;
+        return this.remoteInfo.port;
     }
 
     public getClientSocket(): net.Socket {
