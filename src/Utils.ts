@@ -51,6 +51,13 @@ export default class Utils {
         header.payloay = data.slice(3 + header.addressLength);
         return header;
     }
+
+    public static ipAddressToBuffer(ip: string): Buffer {
+        var nip = ip.split(".").map(function (item) {
+            return parseInt(item);
+        })
+        return Buffer.from(nip);
+    }
 }
 
 export interface IShadowsocksHeader {
