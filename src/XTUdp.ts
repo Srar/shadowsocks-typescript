@@ -62,7 +62,7 @@ export default class XTUdp {
         for (var i = 1; i < this.xtimes; i++) {
             this.rawsocket.send(sendingBuffer, 0, sendingBuffer.length, clientIpAddress, function (error, bytes) {
                 if (error) {
-                    this.logger.warn(`[XTUdp] Sending packet failed: ${error.message}.`);
+                    this.logger.warn(`[XTUdp] Send packet failed: ${error.message}.`);
                     return;
                 }
             });
