@@ -20,6 +20,8 @@
   "dependencies": {
     "@types/node": "^9.4.7",
     "@types/optimist": "0.0.29",
+    "cap": "^0.2.0",
+    "network": "^0.4.1",
     "optimist": "^0.6.1",
     "tracer": "^0.8.12",
     "ts-node": "^5.0.1",

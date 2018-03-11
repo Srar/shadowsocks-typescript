@@ -13,6 +13,7 @@ import SSCrypto from "./Crypto/SSCrypto"
 import { ISSCryptoMethod } from "./Crypto/ISSCryptoMethod"
 import ShadowsocksTcpProcess, { ShadowsocksProcessConfig } from "./Tcp"
 import ShadowsocksUdpProcess from "./Udp";
+import XTUdp from "./XTUdp"
 
 const argv = require("optimist")
     .usage("Usage: $0 --config [config file]")
@@ -58,7 +59,7 @@ shadowsocksUdpProcess.on("clientHanded", function (clientAddress, clientPort, ta
     logger.info(`[UDP] ${clientAddress}:${clientPort} <--> ${targetAddress}:${targetPort}`);
 })
 shadowsocksUdpProcess.on("error", function (err, address, port) {
-    logger.warn(`[TCP] ${address}:${port}`, err.message);
+    logger.warn(`[UDP] ${address}:${port}`, err.message);
 });
 /* UDP Process End */
 
@@ -78,3 +79,10 @@ shadowsocksTcpServer.listen(
         logger.info(`[TCP] Shadowsocks server listening at ${address.address}:${address.port}.`);
     }
 );
+
+new XTUdp(config, logger);
+
+process.on("unhandledRejection", function (reason, p) {
+    console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
+    process.exit(-1);
+});

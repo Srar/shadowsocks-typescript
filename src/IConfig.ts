@@ -4,6 +4,7 @@ interface IConfig {
     server_port?: number,
     password?: string,
     method?: string
+    xtudp?: number
 }
 
 export default IConfig
