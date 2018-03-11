@@ -39,7 +39,7 @@ export default class XTUdp {
         var device = Cap.findDevice(defaultIpAddress);
         var filter = `udp and src port ${this.config.server_port}`;
         this.capBuffer = Buffer.alloc(65535);
-        this.cap.open(device, filter, this.capBuffer.length, this.capBuffer);
+        this.cap.open(device, filter, 10 * 1024 * 1024, this.capBuffer);
         this.cap.setMinBytes && this.cap.setMinBytes(0);
         this.cap.on("packet", this.packet.bind(this))
     }
