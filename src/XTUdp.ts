@@ -1,6 +1,8 @@
 const Cap = require("cap").Cap;
+import * as raw from "raw-socket"
 import * as network from "network"
 
+import Utils from "./Utils"
 import IConfig from "./IConfig"
 
 export default class XTUdp {
@@ -9,6 +11,7 @@ export default class XTUdp {
 
     private cap: any;
     private capBuffer: Buffer;
+    private rawsocket: any;
     private readonly speaceTtl = 0x7B;
 
     constructor(private config: IConfig, private logger: any) {
@@ -35,6 +38,11 @@ export default class XTUdp {
             return;
         }
 
+        this.rawsocket = raw.createSocket({
+            protocol: raw.Protocol.UDP
+        });
+        this.rawsocket.setOption(raw.SocketLevel.IPPROTO_IP, raw.SocketOption.IP_HDRINCL, new Buffer([0x00, 0x00, 0x00, 0x01]), 4);
+
         this.cap = new Cap();
         var device = Cap.findDevice(defaultIpAddress);
         var filter = `udp and src port ${this.config.server_port}`;
@@ -49,9 +57,15 @@ export default class XTUdp {
         if (nbytes < 34) return;
         if (this.capBuffer[22] == this.speaceTtl) return;
         this.capBuffer[22] = this.speaceTtl;
-        var sendingBuffer = this.capBuffer.slice(0, nbytes);
+        var sendingBuffer = this.capBuffer.slice(14, nbytes);
+        var clientIpAddress: string = Utils.bufferToIpAddress(sendingBuffer.slice(16, 21));
         for (var i = 1; i < this.xtimes; i++) {
-            this.cap.send(sendingBuffer);
+            this.rawsocket.send(sendingBuffer, 0, sendingBuffer.length, clientIpAddress, function (error, bytes) {
+                if (error) {
+                    this.logger.warn(`[XTUdp] Sending packet failed: ${error.message}.`);
+                    return;
+                }
+            });
         }
     }
 

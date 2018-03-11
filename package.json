@@ -23,6 +23,7 @@
     "cap": "^0.2.0",
     "network": "^0.4.1",
     "optimist": "^0.6.1",
+    "raw-socket": "^1.5.2",
     "tracer": "^0.8.12",
     "ts-node": "^5.0.1",
     "typescript": "^2.7.2"

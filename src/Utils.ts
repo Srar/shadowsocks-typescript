@@ -52,6 +52,10 @@ export default class Utils {
         return header;
     }
 
+    public static bufferToIpAddress(bufs: Buffer): string {
+        return `${bufs[0].toString(10)}.${bufs[1].toString(10)}.${bufs[2].toString(10)}.${bufs[3].toString(10)}`;
+    }
+
     public static ipAddressToBuffer(ip: string): Buffer {
         var nip = ip.split(".").map(function (item) {
             return parseInt(item);
