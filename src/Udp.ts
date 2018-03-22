@@ -55,6 +55,12 @@ export default class ShadowsocksUdpProcess extends events.EventEmitter {
                     connection.clientPort, connection.clientAddress
                 );
             }.bind(this));
+
+            localSocks.on("error", function(error) {
+                connection.onFree();
+                return this.emit("error", error, rinfo.address, rinfo.port);
+            }.bind(this))
+
             this.connctions.add(connectionId, connection);
             this.emit("clientHanded", rinfo.address, rinfo.port, connection.targetAddress, connection.targetPort);
         }
