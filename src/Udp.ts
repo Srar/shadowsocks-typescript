@@ -45,6 +45,7 @@ export default class ShadowsocksUdpProcess extends events.EventEmitter {
                 }
             }
             localSocks.on("message", function (data, rinfo) {
+                this.connctions.get(connectionId);
                 var header = Buffer.allocUnsafe(7);
                 var ipBuffer = Utils.ipAddressToBuffer(rinfo.address);
                 header[0] = 0x01;
