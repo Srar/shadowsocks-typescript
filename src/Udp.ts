@@ -39,9 +39,10 @@ export default class ShadowsocksUdpProcess extends events.EventEmitter {
                 targetAddress: shadowsocksHeader.address,
                 targetPort: shadowsocksHeader.port,
                 localSocks: localSocks,
-                onFree: function () {
+                onFree: () => {
                     localSocks.removeAllListeners();
                     localSocks.close();
+                    this.connctions.remove(connectionId);
                 }
             }
             localSocks.on("message", function (data, rinfo) {
