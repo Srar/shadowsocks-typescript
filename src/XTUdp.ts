@@ -60,7 +60,7 @@ export default class XTUdp {
         var sendingBuffer = this.capBuffer.slice(14, nbytes);
         var clientIpAddress: string = Utils.bufferToIpAddress(sendingBuffer.slice(16, 21));
         for (var i = 1; i < this.xtimes; i++) {
-            this.rawsocket.send(sendingBuffer, 0, sendingBuffer.length, clientIpAddress, function (error, bytes) {
+            this.rawsocket.send(sendingBuffer, 0, sendingBuffer.length, clientIpAddress, (error, bytes) => {
                 if (error) {
                     this.logger.warn(`[XTUdp] Send packet failed: ${error.message}.`);
                     return;
