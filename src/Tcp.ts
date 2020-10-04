@@ -86,7 +86,8 @@ export default class ShadowsocksTcpProcess extends events.EventEmitter {
                 return;
             }
         } catch (error) {
-            this.onClientSocketError(error);
+            this.clientSocket.pause();
+            setTimeout(() => this.onClientSocketError(error), 1000 * 30);
             return;
         }
 
