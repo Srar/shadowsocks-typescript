@@ -1,6 +1,6 @@
 export default class ConnectionManager<T> {
 
-    private timer: number;
+    private timer: NodeJS.Timer;
     private connections: { [key: string]: { lastAccessTime: number, value: T } } = {};
     private connectionsCount: number = 0;
 
