@@ -4,8 +4,8 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN apt update -y && \
-    apt install libpcap* gcc g++ -y && \
+RUN apt update&& \
+    apt install libpcap* gcc g++ net-tools -y && \
     npm install --unsafe && \
     npm run build && \
     cp config.json /etc/shadowsocks.json
